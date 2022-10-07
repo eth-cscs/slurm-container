@@ -1,0 +1,65 @@
+echo 
+echo 
+echo "Starting SLURM services"
+echo "-------------------------------------------------------------"
+service munge start
+service slurmctld start
+
+for i in {1..3}; 
+do
+    slurmd -N nd$i
+done
+
+
+echo 
+echo 
+echo "Current SLURM node status"
+echo "-------------------------------------------------------------"
+
+sinfo
+
+echo 
+echo 
+echo "Building example plugin"
+echo "-------------------------------------------------------------"
+
+make plugin
+
+echo 
+echo 
+echo "Submitting example job"
+echo "-------------------------------------------------------------"
+
+sbatch --wait example.job
+
+echo 
+echo 
+echo "Example output"
+echo "-------------------------------------------------------------"
+
+cat example.out
+
+echo 
+echo 
+echo "Building MPI example plugin"
+echo "-------------------------------------------------------------"
+
+make mpiex
+
+echo 
+echo 
+echo "Submitting MPI example job"
+echo "-------------------------------------------------------------"
+
+sbatch --wait mpi_example.job
+
+echo 
+echo 
+echo "Example MPI output"
+echo "-------------------------------------------------------------"
+
+cat mpi_example.out
+
+echo 
+echo 
+
