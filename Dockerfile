@@ -24,8 +24,9 @@ RUN apt-get remove -y slurm-wlm-emulator
 RUN mkdir /var/spool/slurmctld && chown slurm /var/spool/slurmctld && chmod u+rwx /var/spool/slurmctld
 RUN mkdir /var/spool/slurmd    && chown slurm /var/spool/slurmd    && chmod u+rwx /var/spool/slurmd
 
-COPY slurm.conf cgroup.conf /etc/slurm
+COPY cgroup.conf /etc/slurm
 COPY slurmd.service /etc/systemd/system/multi-user.target.wants/
 
-COPY start Makefile example.job mpi_example.job plugin.cpp mpi_hello.c .
+COPY run_slurm_examples Makefile example.job mpi_example.job plugin.cpp mpi_hello.c slurm.conf.in entrypoint.sh .
 
+ENTRYPOINT ./entrypoint.sh

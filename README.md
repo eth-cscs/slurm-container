@@ -1,14 +1,17 @@
 # Slurm Plugin-testing Container
 A Docker container for developing and testing slurm plugins.
-
-## Configuration
-For `slurm` to work correctly, the hostname in `slurm.conf` must match that of the container. The hostname can be changed in the `Makefile`.
-There are currently three nodes (`nd[1-3]`) configured, which means three daemons will need to be started later.
+This image uses slurm compiled with the `--enable-multiple-slurmd` option. This
+allows multiple slurm daemons to run on the same host and avoids needing
+multiple images for each node.
 
 ## Building
 Run `make` to build the Docker image. 
 
 ## Running
-Run `make run` to launch the container and ensure that the hostname is consistent with `slurm.conf`.
+Run `make run` to launch the container. 
+The number of virtual slurm nodes to start is given as a commandline parameter to the docker image in the Makefile.
+The default is three nodes.
 
-Once running, use `. start` to launch the slurm controller `slurmctld` and the node daemons.
+At startup, the `slurm.conf` file is generated with the container hostname and number of requested nodes before starting the slurm controller and node daemons.
+
+Once running, use `./run_slurm_examples` to build and example jobs.

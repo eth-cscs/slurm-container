@@ -1,26 +1,5 @@
 echo 
 echo 
-echo "Starting SLURM services"
-echo "-------------------------------------------------------------"
-service munge start
-service slurmctld start
-
-for i in {1..3}; 
-do
-    slurmd -N nd$i
-    echo "127.0.0.1       nd$i" >> /etc/hosts
-done
-
-
-echo 
-echo 
-echo "Current SLURM node status"
-echo "-------------------------------------------------------------"
-
-sinfo
-
-echo 
-echo 
 echo "Building example plugin"
 echo "-------------------------------------------------------------"
 
