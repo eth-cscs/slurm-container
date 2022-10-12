@@ -8,6 +8,7 @@ service slurmctld start
 for i in {1..3}; 
 do
     slurmd -N nd$i
+    echo "127.0.0.1       nd$i" >> /etc/hosts
 done
 
 
