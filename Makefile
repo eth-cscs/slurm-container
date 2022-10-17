@@ -11,6 +11,12 @@ all: Dockerfile
 	docker build --progress=tty -t ${TAG} .
 	#docker build --no-cache --progress=tty -t ${TAG} .
 
+debian: Dockerfile.debian
+	docker build -f Dockerfile.debian --progress=tty -t ${TAG}.debian .
+
+suse: Dockerfile.suse
+	docker build -f Dockerfile.suse --progress=tty -t ${TAG}.suse .
+
 run: 
 	docker run \
 		--platform=${PLATFORM} \
@@ -18,6 +24,14 @@ run:
 		-e SLURM_VERSION=${SLURM_VERSION} \
 		-e SLURM_NUMNODES=${SLURM_NUMNODES} \
 		${TAG} 
+
+run.suse: 
+	docker run \
+		--platform=${PLATFORM} \
+		--rm -it \
+		-e SLURM_VERSION=${SLURM_VERSION} \
+		-e SLURM_NUMNODES=${SLURM_NUMNODES} \
+		${TAG}.suse
 
 		#--entrypoint=bash \
 
