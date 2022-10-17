@@ -1,32 +1,85 @@
 FROM --platform=linux/amd64 debian:bullseye
 RUN apt-get -y update
 
-RUN    sed -Ei 's/^# deb-src /deb-src /' /etc/apt/sources.list \
-    && sed -i 'p;s/^deb/deb-src/' /etc/apt/sources.list \
-    && apt update
+#
+# Quick and dirty way to ensure we have all the things we need to build slurm by
+# piggy-backing off of the slurm package provided by debian
+# 
 
-RUN apt-get install -y vim less
+RUN apt-get install -y      \
+    libc6                   \
+    munge                   \
+    ucf                     \
+    adduser                 \
+    libcurl4                \
+    libipmimonitoring6      \
+    libjson-c5              \
+    libmunge-dev            \
+    libnuma1                \
+    librrd8                 \
+    libreadline-dev         \
+    libnuma-dev             \
+    hwloc                   \
+    libhwloc-dev            \
+    libhdf5-dev             \
+    man2html                \
+    liblz4-dev              \
+    zlib1g-dev              \
+    freeipmi                \
+    libfreeipmi-dev         \
+    libjwt-dev              \
+    liblua5.1-0-dev         \
+    libmariadb-dev          \
+    rrdtool                 \
+    libyaml-dev             \
+    libhttp-parser-dev      \
+    libjwt-dev              \
+    libcurl4-gnutls-dev     \
+    libdbus-1-dev           \
+    libmount-dev
+
+
+
+RUN apt-get install -y vim less curl ca-certificates bzip2 
+
 RUN apt-get install -y mpich libmpich-dev
-
 RUN apt-get install -y munge
-RUN apt-get build-dep -y slurm-wlm
+RUN apt-get install -y make python3
 
-RUN apt-get source slurm-wlm
-ARG DEB_BUILD_OPTIONS parallel=8
+RUN useradd slurm
+RUN mkdir -p /var/log/slurm
+RUN mkdir -p /var/spool/slurmctld && chown slurm /var/spool/slurmctld && chmod u+rwx /var/spool/slurmctld
+RUN mkdir -p /var/spool/slurmd    && chown slurm /var/spool/slurmd    && chmod u+rwx /var/spool/slurmd
 
-RUN cd slurm-wlm-* && sed -i 's/ dh_auto_configure -- .*/& --enable-multiple-slurmd/' debian/rules 
-RUN cd slurm-wlm-* && sed -i 's/ dh_auto_install.*/& --parallel/' debian/rules 
-RUN cd slurm-wlm-* && dpkg-buildpackage -us -uc 
-RUN dpkg --force-depends -i *.deb && apt-get install -fy
 
-RUN apt-get remove -y slurm-wlm-emulator
+COPY install_slurm.sh .
 
-RUN mkdir /var/spool/slurmctld && chown slurm /var/spool/slurmctld && chmod u+rwx /var/spool/slurmctld
-RUN mkdir /var/spool/slurmd    && chown slurm /var/spool/slurmd    && chmod u+rwx /var/spool/slurmd
 
-COPY cgroup.conf /etc/slurm
-COPY slurmd.service /etc/systemd/system/multi-user.target.wants/
+ENV SLURM_VERSION 20.11.9
+    RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
 
-COPY run_slurm_examples Makefile example.job mpi_example.job plugin.cpp mpi_hello.c slurm.conf.in entrypoint.sh .
+ENV SLURM_VERSION 21.08.8-2
+    RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
 
+ENV SLURM_VERSION 22.05.5
+    RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
+
+
+ENV SLURM_VERSION 20.11.9
+    COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
+    COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
+
+ENV SLURM_VERSION 21.08.8-2
+    COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
+    COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
+    
+ENV SLURM_VERSION 22.05.5
+    COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
+    COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
+
+COPY entrypoint.sh .
 ENTRYPOINT ./entrypoint.sh
+
+COPY run_slurm_examples Makefile example.job mpi_example.job plugin.cpp mpi_hello.c .
+
+

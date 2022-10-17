@@ -1,20 +1,31 @@
 #!/bin/bash
 
-DOCKER_NNODES=$1
+service dbus  start
+service munge start
+service munge status
 
-if [ -z "$DOCKER_NNODES" ];
+if [ -z "$SLURM_VERSION" ];
+then
+    echo "INFO: Slurm version to start not given on commandline to docker image."
+    echo "INFO:"
+    echo 'INFO: Usage: docker run --hostname=HOSTNAME -e SLURM_VERSION=<version> -e SLURM_NUMNODES=<# nodes> --rm -it TAG NNODES'
+
+    exit 1
+fi
+
+if [ -z "$SLURM_NUMNODES" ];
 then
     echo "INFO: Number of slurm nodes not given on commandline to docker image."
     echo "INFO: Defaulting to 3 nodes."
     echo "INFO:"
-    echo 'INFO: Usage: docker run --hostname=HOSTNAME  --rm -it TAG NNODES'
+    echo 'INFO: Usage: docker run --hostname=HOSTNAME -e SLURM_VERSION=<version> -e SLURM_NUMNODES=<# nodes> --rm -it TAG NNODES'
 
-    DOCKER_NNODES=3
+    SLURM_NUMNODES=3
 fi
 
-
-SLURM_CONF_IN=slurm.conf.in
-SLURM_CONF=/etc/slurm/slurm.conf
+SLURM_INSTALL=/opt/slurm-$SLURM_VERSION
+SLURM_CONF_IN=$SLURM_INSTALL/etc/slurm.conf.in
+SLURM_CONF=$SLURM_INSTALL/etc/slurm.conf
 
 SLURMCTLD_HOST=${HOSTNAME}
 SLURMCTLD_ADDR=127.0.0.1
@@ -23,8 +34,13 @@ NODE_HOST=${HOSTNAME}
 NODE_ADDR=127.0.0.1
 NODE_BASEPORT=6001
 
-NODE_NAMES=$(printf "nd[%05i-%05i]" 1 $DOCKER_NNODES)
-NODE_PORTS=$(printf "%i-%i" $NODE_BASEPORT $(($NODE_BASEPORT+$DOCKER_NNODES-1)))
+NODE_NAMES=$(printf "nd[%05i-%05i]" 1 $SLURM_NUMNODES)
+NODE_PORTS=$(printf "%i-%i" $NODE_BASEPORT $(($NODE_BASEPORT+$SLURM_NUMNODES-1)))
+
+export PATH=$SLURM_INSTALL/bin:$PATH
+export LD_LIBRARY_PATH=$SLURM_INSTALL/lib:$LD_LIBRARY_PATH
+export MANPATH=$SLURM_INSTALL/man:$MANPATH
+
 
 (
     echo "NodeName=$NODE_NAMES NodeHostname=${NODE_HOST} NodeAddr=${NODE_ADDR} Port=$NODE_PORTS CPUs=4 State=UNKNOWN"
@@ -46,14 +62,11 @@ echo
 echo "Starting Slurm services..."
 echo
 
-service munge start
-service munge status
-service slurmctld start
-service slurmctld status
+$SLURM_INSTALL/sbin/slurmctld
 
 for n in $NODE_NAME_LIST
 do
-    slurmd -N $n
+    $SLURM_INSTALL/sbin/slurmd -N $n
 done
 
 echo
@@ -66,4 +79,3 @@ echo
 echo
 
 exec bash
-
