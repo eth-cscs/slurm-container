@@ -1,8 +1,8 @@
 TAG=slurm-dkr2
 PLATFORM="linux/amd64"
-SLURM_NUMNODES=3
-SLURM_VERSION=20.11.9
-#SLURM_VERSION=21.08.8-2
+SLURM_NUMNODES?=3
+SLURM_VERSION?=20.11.9
+SLURM_VERSION?=21.08.8-2
 #SLURM_VERSION=22.05.5
 
 SLURM_ROOT=/opt/slurm-${SLURM_VERSION}
@@ -24,6 +24,14 @@ run:
 		-e SLURM_VERSION=${SLURM_VERSION} \
 		-e SLURM_NUMNODES=${SLURM_NUMNODES} \
 		${TAG} 
+
+run.debian: 
+	docker run \
+		--platform=${PLATFORM} \
+		--rm -it \
+		-e SLURM_VERSION=${SLURM_VERSION} \
+		-e SLURM_NUMNODES=${SLURM_NUMNODES} \
+		${TAG}.debian
 
 run.suse: 
 	docker run \
