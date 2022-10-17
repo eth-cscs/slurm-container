@@ -1,6 +1,14 @@
 FROM --platform=linux/amd64 debian:bullseye
 RUN apt-get -y update
 
+<<<<<<< variant A
+>>>>>>> variant B
+#
+# Quick and dirty way to ensure we have all the things we need to build slurm by
+# piggy-backing off of the slurm package provided by debian
+#
+
+======= end
 RUN apt-get install -y      \
     libc6                   \
     munge                   \
@@ -35,7 +43,7 @@ RUN apt-get install -y      \
 
 
 
-RUN apt-get install -y vim less curl ca-certificates bzip2 
+RUN apt-get install -y vim less curl ca-certificates bzip2
 
 RUN apt-get install -y mpich libmpich-dev
 RUN apt-get install -y munge
@@ -50,6 +58,7 @@ RUN mkdir -p /var/spool/slurmd    && chown slurm /var/spool/slurmd    && chmod u
 COPY install_slurm.sh .
 
 
+
 ENV SLURM_VERSION 20.11.9
     RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
     RUN  mkdir -p /opt/slurm-${SLURM_VERSION}/etc
@@ -62,6 +71,12 @@ ENV SLURM_VERSION 22.05.5
     RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
     RUN  mkdir -p /opt/slurm-${SLURM_VERSION}/etc
 
+ENV SLURM_VERSION 20.11.9
+RUN mkdir -p /opt/slurm-${SLURM_VERSION}/etc
+ENV SLURM_VERSION 21.08.8-2
+RUN mkdir -p /opt/slurm-${SLURM_VERSION}/etc
+ENV SLURM_VERSION 22.05.5
+RUN mkdir -p /opt/slurm-${SLURM_VERSION}/etc
 
 ENV SLURM_VERSION 20.11.9
     COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
@@ -70,7 +85,7 @@ ENV SLURM_VERSION 20.11.9
 ENV SLURM_VERSION 21.08.8-2
     COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
     COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
-    
+
 ENV SLURM_VERSION 22.05.5
     COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
     COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
@@ -80,6 +95,4 @@ COPY debian/Makefile .
 
 ENTRYPOINT ./entrypoint.sh
 
-COPY run_slurm_examples example.job mpi_example.job plugin.cpp mpi_hello.c .
-
-
+COPY run_slurm_examples Makefile example.job mpi_example.job plugin.cpp mpi_hello.c .
