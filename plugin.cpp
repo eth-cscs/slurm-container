@@ -31,7 +31,7 @@ namespace impl {
 extern "C" {
     extern const char plugin_name [] = "example";
     extern const char plugin_type [] = "spank";
-    extern const unsigned int plugin_version = 1;
+    extern const unsigned int plugin_version = SLURM_VERSION_NUMBER;
 
     // Called from both srun and slurmd.
     int slurm_spank_init(spank_t sp, int ac, char **av) {
