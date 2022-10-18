@@ -1,52 +1,45 @@
-FROM --platform=linux/amd64 debian:bullseye
-RUN apt-get -y update
+FROM --platform=linux/amd64 opensuse/leap:15.3
 
-#
-# Quick and dirty way to ensure we have all the things we need to build slurm by
-# piggy-backing off of the slurm package provided by debian
-# 
 
-RUN apt-get install -y      \
-    libc6                   \
+RUN zypper install -y       \
     munge                   \
-    ucf                     \
-    adduser                 \
-    libcurl4                \
-    libipmimonitoring6      \
-    libjson-c5              \
-    libmunge-dev            \
+    munge-devel             \
     libnuma1                \
+    libnuma-devel           \
     librrd8                 \
-    libreadline-dev         \
-    libnuma-dev             \
+    readline-devel          \
     hwloc                   \
-    libhwloc-dev            \
-    libhdf5-dev             \
-    man2html                \
-    liblz4-dev              \
-    zlib1g-dev              \
+    hwloc-devel             \
+    hdf5                    \
+    hdf5-devel              \
+    lz4                     \
+    liblz4-devel            \
+    libz1                   \
+    zlib-devel              \
     freeipmi                \
-    libfreeipmi-dev         \
-    libjwt-dev              \
-    liblua5.1-0-dev         \
-    libmariadb-dev          \
-    rrdtool                 \
-    libyaml-dev             \
-    libhttp-parser-dev      \
-    libjwt-dev              \
-    libcurl4-gnutls-dev     \
-    libdbus-1-dev           \
-    libmount-dev
+    freeipmi-devel          \
+    dbus-1                  \
+    dbus-1-devel            \
+    make                    \
+    gcc                     \
+    gcc-c++                 \
+    curl                    \
+    tar                     \
+    bzip2                   \
+    python3                 \
+    vim                     \
+    ca-certificates         \
+    less                    \
+    mpich                   \
+    mpich-devel             \
+    sudo
 
+RUN zypper install -y    lua53                   \
+    lua53-devel             \
+    libmount-devel          
 
+RUN useradd -M slurm
 
-RUN apt-get install -y vim less curl ca-certificates bzip2 
-
-RUN apt-get install -y mpich libmpich-dev
-RUN apt-get install -y munge
-RUN apt-get install -y make python3
-
-RUN useradd slurm
 RUN mkdir -p /var/log/slurm
 RUN mkdir -p /var/spool/slurmctld && chown slurm /var/spool/slurmctld && chmod u+rwx /var/spool/slurmctld
 RUN mkdir -p /var/spool/slurmd    && chown slurm /var/spool/slurmd    && chmod u+rwx /var/spool/slurmd
@@ -64,6 +57,12 @@ ENV SLURM_VERSION 21.08.8-2
 ENV SLURM_VERSION 22.05.5
     RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
 
+ENV SLURM_VERSION 20.11.9
+    RUN  mkdir -p /opt/slurm-${SLURM_VERSION}/etc
+ENV SLURM_VERSION 21.08.8-2
+    RUN  mkdir -p /opt/slurm-${SLURM_VERSION}/etc
+ENV SLURM_VERSION 22.05.5
+    RUN  mkdir -p /opt/slurm-${SLURM_VERSION}/etc
 
 ENV SLURM_VERSION 20.11.9
     COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
@@ -77,9 +76,14 @@ ENV SLURM_VERSION 22.05.5
     COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
     COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
 
-COPY entrypoint.sh .
+ARG NOCACHE=2
+RUN echo "$NOCACHE"
+
+COPY suse/entrypoint.sh .
+COPY suse/Makefile .
+
 ENTRYPOINT ./entrypoint.sh
 
-COPY run_slurm_examples Makefile example.job mpi_example.job plugin.cpp mpi_hello.c .
+COPY run_slurm_examples example.job mpi_example.job plugin.cpp mpi_hello.c .
 
 

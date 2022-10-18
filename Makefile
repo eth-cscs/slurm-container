@@ -3,19 +3,26 @@ PLATFORM="linux/amd64"
 SLURM_NUMNODES?=3
 SLURM_VERSION?=20.11.9
 SLURM_VERSION?=21.08.8-2
-#SLURM_VERSION=22.05.5
+SLURM_VERSION?=22.05.5
 
-SLURM_ROOT=/opt/slurm-${SLURM_VERSION}
+all: 
+	echo "Available targets:"
+	echo
+	echo "	debian	    Build Debian based Docker container"
+	echo "	suse	    Build OpenSUSE based Docker container"
+	echo "	run.debian  Start Debian container using SLURM_VERSION and SLURM_NUMNODES"
+	echo "	run.suse    Start OpenSUSE container using SLURM_VERSION and SLURM_NUMNODES"
+	echo
+	echo "SLURM_VERSION and SLURM_NUMNODES can be specified directly in this Makefile or"
+	echo "through environment variables."
+	echo
+	echo
 
-all: Dockerfile
-	docker build --progress=tty -t ${TAG} .
-	#docker build --no-cache --progress=tty -t ${TAG} .
+debian: debian/Dockerfile
+	docker build -f debian/Dockerfile --progress=tty -t ${TAG}.debian .
 
-debian: Dockerfile.debian
-	docker build -f Dockerfile.debian --progress=tty -t ${TAG}.debian .
-
-suse: Dockerfile.suse
-	docker build -f Dockerfile.suse --progress=tty -t ${TAG}.suse .
+suse: suse/Dockerfile
+	docker build -f suse/Dockerfile --progress=tty -t ${TAG}.suse .
 
 run: 
 	docker run \
@@ -43,9 +50,3 @@ run.suse:
 
 		#--entrypoint=bash \
 
-plugin:
-	g++ plugin.cpp --shared -o ${SLURM_ROOT}/lib/plugin.so -I${SLURM_ROOT}/include
-	echo "required ${SLURM_ROOT}/lib/plugin.so" > ${SLURM_ROOT}/etc/plugstack.conf
-
-mpiex: mpi_hello.c
-	mpicc -o mpi_hello mpi_hello.c
