@@ -6,17 +6,17 @@ SLURM_VERSION?=21.08.8-2
 SLURM_VERSION?=22.05.5
 
 all: 
-	echo "Available targets:"
-	echo
-	echo "	debian	    Build Debian based Docker container"
-	echo "	suse	    Build OpenSUSE based Docker container"
-	echo "	run.debian  Start Debian container using SLURM_VERSION and SLURM_NUMNODES"
-	echo "	run.suse    Start OpenSUSE container using SLURM_VERSION and SLURM_NUMNODES"
-	echo
-	echo "SLURM_VERSION and SLURM_NUMNODES can be specified directly in this Makefile or"
-	echo "through environment variables."
-	echo
-	echo
+	@echo "Available targets:"
+	@echo
+	@echo "	debian	    Build Debian based Docker container"
+	@echo "	suse	    Build OpenSUSE based Docker container"
+	@echo "	run.debian  Start Debian container using SLURM_VERSION and SLURM_NUMNODES"
+	@echo "	run.suse    Start OpenSUSE container using SLURM_VERSION and SLURM_NUMNODES"
+	@echo
+	@echo "SLURM_VERSION and SLURM_NUMNODES can be specified directly in this Makefile or"
+	@echo "through environment variables."
+	@echo
+	@echo
 
 debian: debian/Dockerfile
 	docker build -f debian/Dockerfile --progress=tty -t ${TAG}.debian .
