@@ -25,8 +25,8 @@ pack+publish:
     - cp $DOCKER_AUTH_CONFIG /kaniko/.docker/config.json
     - cat /kaniko/.docker/config.json
 #    - /kaniko/executor --context . --dockerfile test-image/Dockerfile --destination jfrog.svc.cscs.ch/ws-vcmsa/slurm-container.test-image
-#    - /kaniko/executor --context . --dockerfile test-image/Dockerfile --destination jfrog.svc.cscs.ch/ws-vcmsa/slurm-container/slurm-container.test-image
-    - /kaniko/executor --context . --dockerfile debian/Dockerfile --destination jfrog.svc.cscs.ch/ws-vcmsa/slurm-container/slurm-container.debian:v1
+    - /kaniko/executor --context . --dockerfile test-image/Dockerfile --destination jfrog.svc.cscs.ch/ws-vcmsa/slurm-container/slurm-container.test-image
+#    - /kaniko/executor --context . --dockerfile debian/Dockerfile --destination jfrog.svc.cscs.ch/ws-vcmsa/slurm-container/slurm-container.debian:v1
 #    - /kaniko/executor --context . --dockerfile suse/Dockerfile --destination jfrog.svc.cscs.ch/ws-vcmsa/slurm-container/slurm-container.suse:$BUILD_TAG
 
 
