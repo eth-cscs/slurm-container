@@ -1,0 +1,21 @@
+name: Debian Docker Image 
+
+on:
+  workflow_dispatch:
+    
+#  push:
+#    branches: [ "main" ]
+#  pull_request:
+#    branches: [ "main" ]
+
+jobs:
+
+  build:
+
+    runs-on: debian:bullseye
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Build the Docker image
+#      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+      run: docker build . --file debian/Dockerfile --tag eth-cscs-slurm-container:v1
