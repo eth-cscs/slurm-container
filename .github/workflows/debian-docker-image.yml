@@ -12,7 +12,8 @@ jobs:
 
   build:
 
-    runs-on: debian:bullseye
+    #runs-on: debian:bullseye
+    runs-on: self-hosted
 
     steps:
     - uses: actions/checkout@v3
