@@ -12,6 +12,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: docker build . --file test-image/Dockerfile --tag slurm-container-test:latest
+      run: docker build . --file test-image/Dockerfile --tag ghcr.io/eth-cscs/slurm-container-test:latest
     - name: Push Docker Image
       run: docker push ghcr.io/eth-cscs/slurm-container-test:latest
