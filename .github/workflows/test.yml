@@ -12,11 +12,6 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: echo "hello world" > hello.txt
-      #docker build . --file Dockerfile --tag my-image-name:$(date +%s)
-    - name: upload
-      uses: actions/upload-artifact@v3
-      with:
-        name: text_file
-        path: '*.txt'
-
+      run: docker build . --file Dockerfile.test --tag slurm-container-test:latest
+    - name: Push Docker Image
+      run: docker push ghcr.io/eth-cscs/slurm-container-test:latest
