@@ -12,5 +12,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Build the Docker image
-      run: echo
+      run: echo "hello world" > hello.txt
       #docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: upload
+      uses: actions/upload-artifact@v3
+      with:
+        name: text_file
+        path: '*.txt'
+
