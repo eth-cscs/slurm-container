@@ -5,15 +5,6 @@ sudo -u munge munged
 
 . /usr/lib64/mpi/gcc/mpich/bin/mpivars.sh
 
-if [ -z "$SLURM_VERSION" ];
-then
-    echo "INFO: Slurm version to start not given on commandline to docker image."
-    echo "INFO:"
-    echo 'INFO: Usage: docker run --hostname=HOSTNAME -e SLURM_VERSION=<version> -e SLURM_NUMNODES=<# nodes> --rm -it TAG NNODES'
-
-    exit 1
-fi
-
 if [ -z "$SLURM_NUMNODES" ];
 then
     echo "INFO: Number of slurm nodes not given on commandline to docker image."
@@ -24,9 +15,8 @@ then
     SLURM_NUMNODES=3
 fi
 
-SLURM_INSTALL=/opt/slurm-$SLURM_VERSION
-SLURM_CONF_IN=$SLURM_INSTALL/etc/slurm.conf.in
-SLURM_CONF=$SLURM_INSTALL/etc/slurm.conf
+SLURM_CONF_IN=/usr/local/etc/slurm.conf.in
+SLURM_CONF=/usr/local/etc/slurm.conf
 
 SLURMCTLD_HOST=${HOSTNAME}
 SLURMCTLD_ADDR=127.0.0.1
@@ -38,9 +28,9 @@ NODE_BASEPORT=6001
 NODE_NAMES=$(printf "nd[%05i-%05i]" 1 $SLURM_NUMNODES)
 NODE_PORTS=$(printf "%i-%i" $NODE_BASEPORT $(($NODE_BASEPORT+$SLURM_NUMNODES-1)))
 
-export PATH=$SLURM_INSTALL/bin:$PATH
-export LD_LIBRARY_PATH=$SLURM_INSTALL/lib:$LD_LIBRARY_PATH
-export MANPATH=$SLURM_INSTALL/man:$MANPATH
+# export PATH=$SLURM_INSTALL/bin:$PATH
+# export LD_LIBRARY_PATH=$SLURM_INSTALL/lib:$LD_LIBRARY_PATH
+# export MANPATH=$SLURM_INSTALL/man:$MANPATH
 
 
 (
@@ -63,11 +53,11 @@ echo
 echo "Starting Slurm services..."
 echo
 
-$SLURM_INSTALL/sbin/slurmctld
+slurmctld
 
 for n in $NODE_NAME_LIST
 do
-    $SLURM_INSTALL/sbin/slurmd -N $n
+    slurmd -N $n
 done
 
 echo
@@ -79,4 +69,4 @@ echo "INFO: Run ./run_slurm_examples to build and submit example slurm scripts."
 echo
 echo
 
-exec bash
+exec "$@"

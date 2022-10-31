@@ -3,12 +3,13 @@
 # Usage: install_slurm.sh <slurm-version> <install-prefix> [configure-args]
 #
 
+set -e
+
 SLURM_VERSION=$1
-SLURM_INSTALL=$2
-shift; shift
+shift;
 ARGS=$*
 
-if [ -z "$SLURM_VERSION" -o -z "$SLURM_INSTALL" ];
+if [ -z "$SLURM_VERSION" ];
 then
     echo "Usage: install_slurm.sh <slurm-version> <install-prefix> [configure-args]"
     echo "No Slurm version or install-prefix specified on command line. Aborting."
@@ -22,18 +23,18 @@ if true; then
 
     mkdir -p /opt/src || exit 1
     (
-        cd /opt/src
+        cd /opt/src || exit 1
 
         slurm_tar_file=slurm-${SLURM_VERSION}.tar.bz2
         slurm_url=https://download.schedmd.com/slurm/${slurm_tar_file}
 
-        if ! stat $slurm_tar_file; then
+        if ! stat "$slurm_tar_file"; then
             echo "=== downloading slurm ${SLURM_VERSION} from ${slurm_url}"
-            curl --fail --output ${slurm_tar_file} ${slurm_url} || exit 1
+            curl --fail --output "${slurm_tar_file}" "${slurm_url}" || exit 1
         fi
 
         echo "=== unpacking $slurm_tar_file"
-        tar -xjf ${slurm_tar_file} || exit 1
+        tar -xjf "${slurm_tar_file}" || exit 1
     )
 
 fi
@@ -48,15 +49,13 @@ fi
 # Run configure, make, make install
 #
 
-stat /opt/build/slurm-${SLURM_VERSION} && rm -rf /opt/build/slurm-${SLURM_VERSION}
-mkdir -p /opt/build/slurm-${SLURM_VERSION} || exit 1
+stat /opt/build/slurm-"${SLURM_VERSION}" && rm -rf /opt/build/slurm-"${SLURM_VERSION}"
+mkdir -p /opt/build/slurm-"${SLURM_VERSION}" || exit 1
 (
-    cd /opt/build/slurm-${SLURM_VERSION}
-    /opt/src/slurm-${SLURM_VERSION}/configure \
-        --prefix=${SLURM_INSTALL} \
+    cd /opt/build/slurm-"${SLURM_VERSION}"
+    /opt/src/slurm-"${SLURM_VERSION}"/configure \
         --disable-dependency-tracking \
-        $ARGS 
+        "$ARGS"
 
     make -j4 && make install
 )
-

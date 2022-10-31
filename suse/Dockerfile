@@ -36,7 +36,7 @@ RUN zypper install -y       \
 
 RUN zypper install -y    lua53                   \
     lua53-devel             \
-    libmount-devel          
+    libmount-devel
 
 RUN useradd -M slurm
 
@@ -49,32 +49,18 @@ COPY install_slurm.sh .
 
 
 ENV SLURM_VERSION 20.11.9
-    RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
-
-ENV SLURM_VERSION 21.08.8-2
-    RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
-
-ENV SLURM_VERSION 22.05.5
-    RUN  ./install_slurm.sh ${SLURM_VERSION} /opt/slurm-${SLURM_VERSION} --enable-multiple-slurmd
+RUN  ./install_slurm.sh ${SLURM_VERSION} --enable-multiple-slurmd
 
 ENV SLURM_VERSION 20.11.9
-    RUN  mkdir -p /opt/slurm-${SLURM_VERSION}/etc
-ENV SLURM_VERSION 21.08.8-2
-    RUN  mkdir -p /opt/slurm-${SLURM_VERSION}/etc
-ENV SLURM_VERSION 22.05.5
-    RUN  mkdir -p /opt/slurm-${SLURM_VERSION}/etc
+RUN  mkdir -p /usr/local/etc/
 
 ENV SLURM_VERSION 20.11.9
-    COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
-    COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
+COPY slurm-${SLURM_VERSION}/cgroup.conf /usr/local/etc/
+COPY slurm-${SLURM_VERSION}/slurm.conf.in /usr/local/etc/
 
-ENV SLURM_VERSION 21.08.8-2
-    COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
-    COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
-    
-ENV SLURM_VERSION 22.05.5
-    COPY slurm-${SLURM_VERSION}/cgroup.conf /opt/slurm-${SLURM_VERSION}/etc
-    COPY slurm-${SLURM_VERSION}/slurm.conf.in /opt/slurm-${SLURM_VERSION}/etc
+RUN zypper install -y python3-pip
+RUN python3 -m pip install --upgrade pip && python3 -m pip install meson ninja
+
 
 ARG NOCACHE=2
 RUN echo "$NOCACHE"
@@ -82,8 +68,6 @@ RUN echo "$NOCACHE"
 COPY suse/entrypoint.sh .
 COPY suse/Makefile .
 
-ENTRYPOINT ./entrypoint.sh
+ENTRYPOINT ./entrypoint.sh /bin/bash
 
-COPY run_slurm_examples example.job mpi_example.job plugin.cpp mpi_hello.c .
-
-
+COPY run_slurm_examples example.job  /
