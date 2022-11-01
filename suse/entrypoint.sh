@@ -28,11 +28,6 @@ NODE_BASEPORT=6001
 NODE_NAMES=$(printf "nd[%05i-%05i]" 1 $SLURM_NUMNODES)
 NODE_PORTS=$(printf "%i-%i" $NODE_BASEPORT $(($NODE_BASEPORT+$SLURM_NUMNODES-1)))
 
-# export PATH=$SLURM_INSTALL/bin:$PATH
-# export LD_LIBRARY_PATH=$SLURM_INSTALL/lib:$LD_LIBRARY_PATH
-# export MANPATH=$SLURM_INSTALL/man:$MANPATH
-
-
 (
     echo "NodeName=$NODE_NAMES NodeHostname=${NODE_HOST} NodeAddr=${NODE_ADDR} Port=$NODE_PORTS CPUs=4 State=UNKNOWN"
     echo "PartitionName=dkr Nodes=ALL Default=YES MaxTime=INFINITE State=UP"
