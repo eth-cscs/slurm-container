@@ -49,7 +49,7 @@ COPY install_slurm.sh .
 
 
 ENV SLURM_VERSION 20.11.9
-RUN  ./install_slurm.sh ${SLURM_VERSION} --enable-multiple-slurmd
+RUN  ./install_slurm.sh ${SLURM_VERSION} /usr/local --enable-multiple-slurmd
 
 ENV SLURM_VERSION 20.11.9
 RUN  mkdir -p /usr/local/etc/

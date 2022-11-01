@@ -3,13 +3,12 @@
 # Usage: install_slurm.sh <slurm-version> <install-prefix> [configure-args]
 #
 
-set -e
-
 SLURM_VERSION=$1
-shift;
+SLURM_INSTALL=$2
+shift; shift
 ARGS=$*
 
-if [ -z "$SLURM_VERSION" ];
+if [ -z "$SLURM_VERSION" ] || [ -z "$SLURM_INSTALL" ];
 then
     echo "Usage: install_slurm.sh <slurm-version> <install-prefix> [configure-args]"
     echo "No Slurm version or install-prefix specified on command line. Aborting."
@@ -52,8 +51,9 @@ fi
 stat /opt/build/slurm-"${SLURM_VERSION}" && rm -rf /opt/build/slurm-"${SLURM_VERSION}"
 mkdir -p /opt/build/slurm-"${SLURM_VERSION}" || exit 1
 (
-    cd /opt/build/slurm-"${SLURM_VERSION}"
+    cd /opt/build/slurm-"${SLURM_VERSION}" || exit 1
     /opt/src/slurm-"${SLURM_VERSION}"/configure \
+        --prefix="$SLURM_INSTALL" \
         --disable-dependency-tracking \
         "$ARGS"
 
