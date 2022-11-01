@@ -14,6 +14,5 @@ run:
 	docker run \
 		--platform=${PLATFORM} \
 		--rm -it \
-		--privileged \
 		-e SLURM_NUMNODES=${SLURM_NUMNODES} \
 		${TAG}
