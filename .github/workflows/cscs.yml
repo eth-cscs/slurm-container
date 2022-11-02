@@ -1,4 +1,4 @@
-name: Docker Image CI Test
+name: Build all slurm containers
 
 on:
   workflow_dispatch:
