@@ -2,9 +2,7 @@ name: Docker Image CI Test
 
 on:
   workflow_dispatch:
-  
-env:
-  store:    ghcr.io/eth-cscs
+    
 #env:
 #  REGISTRY: ghcr.io
 #  TAG_ROOT: ${{ env.REGISTRY }}/${{ github.repository }}
@@ -20,7 +18,8 @@ jobs:
         version: [20.11.9]     
 
     env:
-      tag:      ${{ env.store }}/slurm-container-${{ matrix.version }}:latest
+      store:    ghcr.io/eth-cscs  
+      tag:      ${{  /slurm-container-${{ matrix.version }}:latest
       context:  .github/workflows/cscs/slurm-${{ matrix.version }}
 
     steps:
