@@ -3,6 +3,8 @@ name: Docker Image CI Test
 on:
   workflow_dispatch:
   
+env:
+    store:    ghcr.io/eth-cscs
 #env:
 #  REGISTRY: ghcr.io
 #  TAG_ROOT: ${{ env.REGISTRY }}/${{ github.repository }}
@@ -13,15 +15,22 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        version: [20.11.9]     
 
     steps:
     - uses: actions/checkout@v3
     - name: Login
-      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u jpcoles --password-stdin
+      run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build the Docker image
-      run: docker build . --file test-image/Dockerfile --tag ghcr.io/eth-cscs/slurm-container-test:latest
+      env:
+        store:    ghcr.io/eth-cscs
+        tag:      ${{ env.store }}/slurm-container-${{ matrix.version }}:latest
+        context:  .github/cscs/slurm-${{ matrix.version }}
+      run: docker build ${{ env.context }} --tag ${{ env.tag }}
     - name: Push Docker Image
-      run: docker push ghcr.io/eth-cscs/slurm-container-test:latest
+      run: docker push ${{ env.tag }}
 
 
   rpm:
