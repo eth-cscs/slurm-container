@@ -1,12 +1,5 @@
 echo 
 echo 
-echo "Building example plugin"
-echo "-------------------------------------------------------------"
-
-make plugin
-
-echo 
-echo 
 echo "Submitting example job"
 echo "-------------------------------------------------------------"
 
@@ -21,10 +14,11 @@ cat example.out
 
 echo 
 echo 
-echo "Building MPI example plugin"
+echo "Compiling mpi example"
 echo "-------------------------------------------------------------"
 
-make mpiex
+mpicc -o mpi_hello mpi_hello.c
+
 
 echo 
 echo 

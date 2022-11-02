@@ -17,7 +17,7 @@ jobs:
 
     env:
       tag:      ghcr.io/eth-cscs/slurm-container-${{ matrix.version }}:latest
-      context:  .github/workflows/cscs/slurm-${{ matrix.version }}
+      context:  slurm-${{ matrix.version }}
 
     steps:
     - uses: actions/checkout@v3

@@ -1,52 +1,27 @@
-TAG=slurm-dkr2
 PLATFORM="linux/amd64"
 SLURM_NUMNODES?=3
-SLURM_VERSION?=20.11.9
-SLURM_VERSION?=21.08.8-2
-SLURM_VERSION?=22.05.5
 
 all: 
-	@echo "Available targets:"
+	@echo "Usage:"
 	@echo
-	@echo "	debian	    Build Debian based Docker container"
-	@echo "	suse	    Build OpenSUSE based Docker container"
-	@echo "	run.debian  Start Debian container using SLURM_VERSION and SLURM_NUMNODES"
-	@echo "	run.suse    Start OpenSUSE container using SLURM_VERSION and SLURM_NUMNODES"
+	@echo "make <slurm-version-directory-name>"
 	@echo
-	@echo "SLURM_VERSION and SLURM_NUMNODES can be specified directly in this Makefile or"
-	@echo "through environment variables."
+	@echo "make run TAG=<slurm-version-directory-name> [SLURM_NUMNODES=#]"
+	@echo
+	@echo "SLURM_NUMNODES can be specified to change the number of slurm nodes running in the"
+	@echo "container. Default: 3"
 	@echo
 	@echo
 
-debian: debian/Dockerfile
-	docker build -f debian/Dockerfile --progress=tty -t ${TAG}.debian .
-
-suse: suse/Dockerfile
-	docker build -f suse/Dockerfile --progress=tty -t ${TAG}.suse .
+slurm-*: .PHONY
+	docker build $@ --progress=tty -t $@:latest 
 
 run: 
-	docker run \
-		--platform=${PLATFORM} \
-		--rm -it \
-		-e SLURM_VERSION=${SLURM_VERSION} \
-		-e SLURM_NUMNODES=${SLURM_NUMNODES} \
-		${TAG} 
+	@ID=`docker run --detach --rm -it -e SLURM_NUMNODES=${SLURM_NUMNODES} ${TAG}`	\
+	&& docker cp example.job	    $$ID:.					\
+	&& docker cp mpi_example.job	    $$ID:. 					\
+	&& docker cp mpi_hello.c	    $$ID:.					\
+	&& docker cp run_slurm_examples	    $$ID:. 					\
+	&& docker attach $$ID 
 
-run.debian: 
-	docker run \
-		--platform=${PLATFORM} \
-		--rm -it \
-		-e SLURM_VERSION=${SLURM_VERSION} \
-		-e SLURM_NUMNODES=${SLURM_NUMNODES} \
-		${TAG}.debian
-
-run.suse: 
-	docker run \
-		--platform=${PLATFORM} \
-		--rm -it \
-		-e SLURM_VERSION=${SLURM_VERSION} \
-		-e SLURM_NUMNODES=${SLURM_NUMNODES} \
-		${TAG}.suse
-
-		#--entrypoint=bash \
-
+.PHONY:
