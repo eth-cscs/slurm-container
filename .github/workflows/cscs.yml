@@ -19,14 +19,15 @@ jobs:
       matrix:
         version: [20.11.9]     
 
+    env:
+      tag:      ${{ env.store }}/slurm-container-${{ matrix.version }}:latest
+      context:  .github/workflows/cscs/slurm-${{ matrix.version }}
+
     steps:
     - uses: actions/checkout@v3
     - name: Login
       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build the Docker image
-      env:
-        tag:      ${{ env.store }}/slurm-container-${{ matrix.version }}:latest
-        context:  .github/workflows/cscs/slurm-${{ matrix.version }}
       run: |
           echo docker push ${{ env.store }}
           echo docker push ${{ env.context }}
