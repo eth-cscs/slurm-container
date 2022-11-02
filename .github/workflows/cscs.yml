@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
   
 env:
-    store:    ghcr.io/eth-cscs
+  store:    ghcr.io/eth-cscs
 #env:
 #  REGISTRY: ghcr.io
 #  TAG_ROOT: ${{ env.REGISTRY }}/${{ github.repository }}
@@ -30,8 +30,8 @@ jobs:
     - name: Build the Docker image
       run: |
           echo docker push ${{ env.store }}
-          echo docker push ${{ env.context }}
           echo docker push ${{ env.tag }}
+          echo docker push ${{ env.context }}
           #docker build ${{ env.context }} --tag ${{ env.tag }}
     - name: Push Docker Image
       run: docker push ${{ env.tag }}
