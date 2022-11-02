@@ -3,11 +3,6 @@ name: Docker Image CI Test
 on:
   workflow_dispatch:
     
-#env:
-#  REGISTRY: ghcr.io
-#  TAG_ROOT: ${{ env.REGISTRY }}/${{ github.repository }}
-
-
 jobs:
 
   build:
@@ -26,20 +21,6 @@ jobs:
     - name: Login
       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build the Docker image
-      run: |
-          echo docker push ${{ env.tag }}
-          echo docker push ${{ env.context }}
-          #docker build ${{ env.context }} --tag ${{ env.tag }}
+      run: docker build ${{ env.context }} --tag ${{ env.tag }}
     - name: Push Docker Image
       run: docker push ${{ env.tag }}
-
-
-  rpm:
-    runs-on: ubuntu-latest
-    container: ghcr.io/eth-cscs/slurm-container-test:latest
-    steps:
-    - name: Checkout plugin source
-      uses: actions/checkout@v3
-    - name: Build
-      run: make
-
