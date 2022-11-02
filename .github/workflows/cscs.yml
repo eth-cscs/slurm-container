@@ -27,7 +27,7 @@ jobs:
       env:
         store:    ghcr.io/eth-cscs
         tag:      ${{ env.store }}/slurm-container-${{ matrix.version }}:latest
-        context:  .github/cscs/slurm-${{ matrix.version }}
+        context:  .github/workflows/cscs/slurm-${{ matrix.version }}
       run: docker build ${{ env.context }} --tag ${{ env.tag }}
     - name: Push Docker Image
       run: docker push ${{ env.tag }}
