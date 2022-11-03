@@ -1,7 +1,7 @@
 PLATFORM="linux/amd64"
 SLURM_NUMNODES?=3
 
-all: 
+all:
 	@echo "Usage:"
 	@echo
 	@echo "make <slurm-version-directory-name>"
@@ -14,14 +14,15 @@ all:
 	@echo
 
 slurm-*: .PHONY
-	docker build $@ --progress=tty -t $@:latest 
+	docker build $@ --progress=tty -t $@:latest
 
-run: 
-	@ID=`docker run --detach --rm -it -e SLURM_NUMNODES=${SLURM_NUMNODES} ${TAG}`	\
-	&& docker cp example.job	    $$ID:.					\
-	&& docker cp mpi_example.job	    $$ID:. 					\
-	&& docker cp mpi_hello.c	    $$ID:.					\
-	&& docker cp run_slurm_examples	    $$ID:. 					\
-	&& docker attach $$ID 
+run:
+	ID=`docker run --detach --name ${TAG} --rm -it -e SLURM_NUMNODES=${SLURM_NUMNODES} ${TAG} tail -f`	\
+	&& echo $$ID \
+	&& docker cp example.job			$$ID:.					\
+	&& docker cp mpi_example.job			$$ID:.					\
+	&& docker cp mpi_hello.c			$$ID:.					\
+	&& docker cp run_slurm_examples			$$ID:. \
+	&& docker run -it ${TAG} bash
 
 .PHONY:
