@@ -59,7 +59,7 @@ COPY cgroup.conf    ${SLURM_ROOT}/etc
 COPY slurm.conf.in  ${SLURM_ROOT}/etc
 
 COPY entrypoint.sh .
+COPY start-slurm.sh .
 ENTRYPOINT ["./entrypoint.sh", "--"]
 
 #COPY run_slurm_examples example.job mpi_example.job plugin.cpp mpi_hello.c .
-
