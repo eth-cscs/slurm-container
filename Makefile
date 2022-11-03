@@ -1,5 +1,6 @@
 PLATFORM="linux/amd64"
 SLURM_NUMNODES?=3
+TAG?=slurm-22.11.9
 
 all:
 	@echo "Usage:"
@@ -17,12 +18,12 @@ slurm-*: .PHONY
 	docker build $@ --progress=tty -t $@:latest
 
 run:
-	ID=`docker run --detach --name ${TAG} --rm -it -e SLURM_NUMNODES=${SLURM_NUMNODES} ${TAG} tail -f`	\
+	@ID=`docker run --detach --name ${TAG} --rm -it -e SLURM_NUMNODES=${SLURM_NUMNODES} ${TAG} bash`	\
 	&& echo $$ID \
 	&& docker cp example.job			$$ID:.					\
 	&& docker cp mpi_example.job			$$ID:.					\
 	&& docker cp mpi_hello.c			$$ID:.					\
 	&& docker cp run_slurm_examples			$$ID:. \
-	&& docker run -it ${TAG} bash
+	&& docker attach $$ID
 
 .PHONY:
