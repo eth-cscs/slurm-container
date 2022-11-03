@@ -5,14 +5,14 @@
 
 SLURM_VERSION=$1
 SLURM_ROOT=$2
-shift; shift
+shift
+shift
 ARGS=$*
 
-if [ -z "$SLURM_VERSION" -o -z "$SLURM_ROOT" ];
-then
-    echo "Usage: install_slurm.sh <slurm-version> <install-prefix> [configure-args]"
-    echo "No Slurm version or install-prefix specified on command line. Aborting."
-    exit 1
+if [ -z "$SLURM_VERSION" ] || [ -z "$SLURM_ROOT" ]; then
+  echo "Usage: install_slurm.sh <slurm-version> <install-prefix> [configure-args]"
+  echo "No Slurm version or install-prefix specified on command line. Aborting."
+  exit 1
 fi
 
 #
@@ -20,43 +20,48 @@ fi
 #
 if true; then
 
-    mkdir -p /opt/src || exit 1
-    (
-        cd /opt/src
+  mkdir -p /opt/src || exit 1
+  (
+    cd /opt/src || exit 1
 
-        slurm_tar_file=slurm-${SLURM_VERSION}.tar.bz2
-        slurm_url=https://download.schedmd.com/slurm/${slurm_tar_file}
+    slurm_tar_file=slurm-${SLURM_VERSION}.tar.bz2
+    slurm_url=https://download.schedmd.com/slurm/${slurm_tar_file}
 
-        if ! stat $slurm_tar_file; then
-            echo "=== downloading slurm ${SLURM_VERSION} from ${slurm_url}"
-            curl --fail --output ${slurm_tar_file} ${slurm_url} || exit 1
-        fi
+    if ! stat "$slurm_tar_file"; then
+      echo "=== downloading slurm ${SLURM_VERSION} from ${slurm_url}"
+      curl --fail --output "${slurm_tar_file}" "${slurm_url}" || exit 1
+    fi
 
-        echo "=== unpacking $slurm_tar_file"
-        tar -xjf ${slurm_tar_file} || exit 1
-    )
+    echo "=== unpacking $slurm_tar_file"
+    tar -xjf "${slurm_tar_file}" || exit 1
+  )
 
 fi
 
-if [ "$ARGS" = "NO_BUILD" ];
-then
-    exit 0
+if [ "$ARGS" = "NO_BUILD" ]; then
+  exit 0
 fi
 
 #
 # Remove any old build directory.
 # Run configure, make, make install
 #
-
-stat /opt/build/slurm-${SLURM_VERSION} && rm -rf /opt/build/slurm-${SLURM_VERSION}
-mkdir -p /opt/build/slurm-${SLURM_VERSION} || exit 1
+stat /opt/build/slurm-"${SLURM_VERSION}" && rm -rf /opt/build/slurm-"${SLURM_VERSION}"
+mkdir -p /opt/build/slurm-"${SLURM_VERSION}" || exit 1
 (
-    cd /opt/build/slurm-${SLURM_VERSION}
-    /opt/src/slurm-${SLURM_VERSION}/configure \
-        --prefix=${SLURM_ROOT} \
-        --disable-dependency-tracking \
-        $ARGS 
+  cd /opt/build/slurm-"${SLURM_VERSION}" || exit 1
+  /opt/src/slurm-"${SLURM_VERSION}"/configure \
+    --prefix="${SLURM_ROOT}" \
+    --disable-dependency-tracking \
+    "$ARGS"
 
-    make -j4 && make install
+  make -j4 && make install
 )
 
+# TODO: where to export the paths?
+# # update environment
+# {
+#     echo "export PATH=${SLURM_ROOT}/bin:\$PATH"
+#     echo "export LD_LIBRARY_PATH=${SLURM_ROOT}/lib:\$LD_LIBRARY_PATH"
+#     echo "export MANPATH=${SLURM_ROOT}/lib:\$MANPATH"
+# } >>/etc/environment

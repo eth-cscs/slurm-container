@@ -28,10 +28,10 @@ NODE_BASEPORT=6001
 NODE_NAMES=$(printf "nd[%05i-%05i]" 1 $SLURM_NUMNODES)
 NODE_PORTS=$(printf "%i-%i" $NODE_BASEPORT $(($NODE_BASEPORT+$SLURM_NUMNODES-1)))
 
+# since /etc/environment doesn't work
 export PATH=$SLURM_ROOT/bin:$PATH
 export LD_LIBRARY_PATH=$SLURM_ROOT/lib:$LD_LIBRARY_PATH
 export MANPATH=$SLURM_ROOT/man:$MANPATH
-
 
 (
     echo "NodeName=$NODE_NAMES NodeHostname=${NODE_HOST} NodeAddr=${NODE_ADDR} Port=$NODE_PORTS CPUs=4 State=UNKNOWN"
