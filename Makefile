@@ -18,7 +18,8 @@ slurm-*: .PHONY
 	docker build $@ --progress=tty -t $@:latest
 
 run:
-	@ID=`docker run --detach --name ${TAG} --rm -it -e SLURM_NUMNODES=${SLURM_NUMNODES} ${TAG} bash`	\
+	@ docker kill ${TAG} \
+	|| ID=`docker run --detach --name ${TAG} --rm -it -e SLURM_NUMNODES=${SLURM_NUMNODES} ${TAG} bash`	\
 	&& echo $$ID \
 	&& docker cp example.job			$$ID:.					\
 	&& docker cp mpi_example.job			$$ID:.					\
