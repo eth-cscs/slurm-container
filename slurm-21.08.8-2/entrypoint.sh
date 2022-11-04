@@ -69,4 +69,4 @@ echo "INFO: Run ./run_slurm_examples to build and submit example slurm scripts."
 echo
 echo
 
-exec bash
+exec "$*"

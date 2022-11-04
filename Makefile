@@ -18,6 +18,7 @@ slurm-*: .PHONY
 
 run: 
 	@ID=`docker run --detach --rm -it -e SLURM_NUMNODES=${SLURM_NUMNODES} ${TAG}`	\
+	&& echo "Running container with ID $$ID"					\
 	&& docker cp example.job	    $$ID:.					\
 	&& docker cp mpi_example.job	    $$ID:. 					\
 	&& docker cp mpi_hello.c	    $$ID:.					\
