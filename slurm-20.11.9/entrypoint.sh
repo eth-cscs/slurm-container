@@ -5,39 +5,58 @@ sudo -u munge munged
 
 . /usr/lib64/mpi/gcc/mpich/bin/mpivars.sh
 
-if [ -z "$SLURM_NUMNODES" ];
-then
-    echo "INFO: Number of slurm nodes not given on commandline to docker image."
-    echo "INFO: Defaulting to 3 nodes."
-    echo "INFO:"
-    echo 'INFO: Usage: docker run --hostname=HOSTNAME -e SLURM_NUMNODES=<# nodes> --rm -it TAG NNODES'
-
-    SLURM_NUMNODES=3
-fi
+#if [ -z "$SLURM_NUMNODES" ];
+#then
+#    echo "INFO: Number of slurm nodes not given on commandline to docker image."
+#    echo "INFO: Defaulting to 3 nodes."
+#    echo "INFO:"
+#    echo 'INFO: Usage: docker run --hostname=HOSTNAME -e SLURM_NUMNODES=<# nodes> --rm -it TAG NNODES'
+#
+#    SLURM_NUMNODES=3
+#fi
 
 SLURM_CONF_IN=$SLURM_ROOT/etc/slurm.conf.in
 SLURM_CONF=$SLURM_ROOT/etc/slurm.conf
 
-SLURMCTLD_HOST="${SLURMCTLD_HOST:=HOSTNAME}"
-SLURMCTLD_ADDR="${SLURMCTLD_ADDR:-127.0.0.1}"
+: "${SLURM_NUMNODES=3}"
 
-NODE_HOST="${NODE_HOST:=HOSTNAME}"
-NODE_ADDR="${NODE_ADDR:-127.0.0.1}"
-NODE_BASEPORT="${NODE_BASEPORT:-6001}"
+: "${SLURMCTLD_HOST=$HOSTNAME}"
+: "${SLURMCTLD_ADDR=127.0.0.1}"
+
+: "${NODE_HOST=$HOSTNAME}"
+: "${NODE_ADDR=127.0.0.1}"
+: "${NODE_BASEPORT=6001}"
 
 NODE_NAMES=$(printf "nd[%05i-%05i]" 1 $SLURM_NUMNODES)
 NODE_PORTS=$(printf "%i-%i" $NODE_BASEPORT $(($NODE_BASEPORT+$SLURM_NUMNODES-1)))
 
-NODE_HW="${NODE_HW:-CPUs=4}"
+NODE_HW="${NODE_HW=CPUs=4}"
+
+echo "INFO:"
+echo "INFO: Creating $SLURM_CONF with"
+echo "INFO: "
+column -t <<-EOF
+      INFO: SLURMCTLD_HOST=$SLURMCTLD_HOST SLURMCTLD_ADDR=$SLURMCTLD_ADDR
+      INFO: NODE_HOST=$NODE_HOST NODE_ADDR=$NODE_ADDR NODE_BASEPORT=$NODE_BASEPORT
+      INFO: NODE_HW=$NODE_HW
+      INFO: SLURM_NUMNODES=$SLURM_NUMNODES
+EOF
+echo "INFO: "
+echo "INFO: Derived values:"
+echo "INFO:"
+echo "INFO: NODE_NAMES=$NODE_NAMES"
+echo "INFO: NODE_PORTS=$NODE_PORTS"
+echo "INFO:"
+echo "INFO: Override any of the non-derived values by setting the respective environment variable"
+echo "INFO: when starting Docker."
+echo "INFO:"
 
 export PATH=$SLURM_ROOT/bin:$PATH
 export LD_LIBRARY_PATH=$SLURM_ROOT/lib:$LD_LIBRARY_PATH
 export MANPATH=$SLURM_ROOT/man:$MANPATH
 
-FOO="${FOO:-default value}"
-
 (
-    echo "NodeName=$NODE_NAMES NodeHostname=${NODE_HOST} NodeAddr=${NODE_ADDR} Port=$NODE_PORTS State=UNKNOWN ${NODE_HW}"
+    echo "NodeName=${NODE_NAMES} NodeHostname=${NODE_HOST} NodeAddr=${NODE_ADDR} Port=${NODE_PORTS} State=UNKNOWN ${NODE_HW}"
     echo "PartitionName=dkr Nodes=ALL Default=YES MaxTime=INFINITE State=UP"
 ) \
 | sed -e "s/SLURMCTLDHOST/${SLURMCTLD_HOST}/" \
