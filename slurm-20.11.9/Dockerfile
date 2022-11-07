@@ -60,7 +60,7 @@ COPY slurm.conf.in  ${SLURM_ROOT}/etc
 
 COPY entrypoint.sh .
 ENTRYPOINT ["./entrypoint.sh"]
-CMD "bash"
+CMD ["bash"]
 
 #COPY run_slurm_examples example.job mpi_example.job plugin.cpp mpi_hello.c .
 
