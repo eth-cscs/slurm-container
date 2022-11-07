@@ -27,10 +27,11 @@ SLURM_CONF=$SLURM_ROOT/etc/slurm.conf
 : "${NODE_ADDR=127.0.0.1}"
 : "${NODE_BASEPORT=6001}"
 
+: "${NODE_HW=CPUs=4}"
+
 NODE_NAMES=$(printf "nd[%05i-%05i]" 1 $SLURM_NUMNODES)
 NODE_PORTS=$(printf "%i-%i" $NODE_BASEPORT $(($NODE_BASEPORT+$SLURM_NUMNODES-1)))
 
-NODE_HW="${NODE_HW=CPUs=4}"
 
 echo "INFO:"
 echo "INFO: Creating $SLURM_CONF with"
