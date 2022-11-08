@@ -1,8 +1,8 @@
 FROM --platform=linux/amd64 opensuse/leap:15.3
 #FROM --platform=linux/arm64v8 opensuse/leap:15.3
 
-ARG SLURM_VERSION   20.11.9
-ARG SLURM_ROOT      /opt/slurm-${SLURM_VERSION}
+ARG SLURM_VERSION=20.11.9
+ARG SLURM_ROOT=/opt/slurm-${SLURM_VERSION}
 
 ENV SLURM_VERSION   ${SLURM_VERSION}
 ENV SLURM_ROOT      ${SLURM_ROOT}
