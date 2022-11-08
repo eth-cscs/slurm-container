@@ -16,14 +16,15 @@ jobs:
           - 22.05.5
 
     env:
-      tag:      ghcr.io/eth-cscs/slurm-container-${{ matrix.version }}:latest
-      context:  slurm-${{ matrix.version }}
+      tag:          ghcr.io/eth-cscs/slurm-container-${{ matrix.version }}:latest
+      context:      slurm-${{ matrix.version }}
+      extra_flags:  -e SLURM_ROOT=/usr/local
 
     steps:
     - uses: actions/checkout@v3
     - name: Login
       run: echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
     - name: Build the Docker image
-      run: docker build ${{ env.context }} --tag ${{ env.tag }}
+      run: docker build ${{ env.context }} --tag ${{ env.tag }} ${{ env.extra_flags }}
     - name: Push Docker Image
       run: docker push ${{ env.tag }}
