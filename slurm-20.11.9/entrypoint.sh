@@ -5,30 +5,25 @@ sudo -u munge munged
 
 . /usr/lib64/mpi/gcc/mpich/bin/mpivars.sh
 
-#if [ -z "$SLURM_NUMNODES" ];
-#then
-#    echo "INFO: Number of slurm nodes not given on commandline to docker image."
-#    echo "INFO: Defaulting to 3 nodes."
-#    echo "INFO:"
-#    echo 'INFO: Usage: docker run --hostname=HOSTNAME -e SLURM_NUMNODES=<# nodes> --rm -it TAG NNODES'
-#
-#    SLURM_NUMNODES=3
-#fi
-
 SLURM_CONF_IN=$SLURM_ROOT/etc/slurm.conf.in
 SLURM_CONF=$SLURM_ROOT/etc/slurm.conf
 
+# Default number of slurm nodes
 : "${SLURM_NUMNODES=3}"
 
+# Default slurm controller
 : "${SLURMCTLD_HOST=$HOSTNAME}"
 : "${SLURMCTLD_ADDR=127.0.0.1}"
 
+# Default node info
 : "${NODE_HOST=$HOSTNAME}"
 : "${NODE_ADDR=127.0.0.1}"
 : "${NODE_BASEPORT=6001}"
 
+# Default hardware profile
 : "${NODE_HW=CPUs=4}"
 
+# Generate node names and associated ports
 NODE_NAMES=$(printf "nd[%05i-%05i]" 1 $SLURM_NUMNODES)
 NODE_PORTS=$(printf "%i-%i" $NODE_BASEPORT $(($NODE_BASEPORT+$SLURM_NUMNODES-1)))
 
