@@ -1,8 +1,10 @@
 FROM --platform=linux/amd64 opensuse/leap:15.3
-#FROM --platform=linux/arm64v8 opensuse/leap:15.3
 
-ENV SLURM_VERSION   21.08.8-2
-ENV SLURM_ROOT      /opt/slurm-${SLURM_VERSION}
+ARG SLURM_VERSION=21.08.8-2
+ARG SLURM_ROOT=/opt/slurm-${SLURM_VERSION}
+
+ENV SLURM_VERSION   ${SLURM_VERSION}
+ENV SLURM_ROOT      ${SLURM_ROOT}
 
 
 RUN zypper install -y       \
@@ -59,5 +61,8 @@ COPY cgroup.conf    ${SLURM_ROOT}/etc
 COPY slurm.conf.in  ${SLURM_ROOT}/etc
 
 COPY entrypoint.sh .
-ENTRYPOINT ./entrypoint.sh
+ENTRYPOINT ["./entrypoint.sh"]
+CMD ["bash"]
+
+#COPY run_slurm_examples example.job mpi_example.job plugin.cpp mpi_hello.c .
 
