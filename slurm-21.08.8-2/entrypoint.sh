@@ -40,8 +40,10 @@ EOF
 echo "INFO: "
 echo "INFO: Derived values:"
 echo "INFO:"
-echo "INFO: NODE_NAMES=$NODE_NAMES"
-echo "INFO: NODE_PORTS=$NODE_PORTS"
+column -t <<-EOF
+      INFO: NODE_NAMES=$NODE_NAMES"
+      INFO: NODE_PORTS=$NODE_PORTS"
+EOF
 echo "INFO:"
 echo "INFO: Override any of the non-derived values by setting the respective environment variable"
 echo "INFO: when starting Docker."
