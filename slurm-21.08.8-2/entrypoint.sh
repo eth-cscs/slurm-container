@@ -5,8 +5,7 @@ sudo -u munge munged
 
 . /usr/lib64/mpi/gcc/mpich/bin/mpivars.sh
 
-SLURM_CONF_IN=$SLURM_ROOT/etc/slurm.conf.in
-SLURM_CONF=$SLURM_ROOT/etc/slurm.conf
+SLURM_CONF_IN=$SLURM_CONF/slurm.conf.in
 
 # Default number of slurm nodes
 : "${SLURM_NUMNODES=3}"

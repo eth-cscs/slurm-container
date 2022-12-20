@@ -2,9 +2,11 @@ FROM --platform=linux/amd64 opensuse/leap:15.3
 
 ARG SLURM_VERSION=22.05.5
 ARG SLURM_ROOT=/opt/slurm-${SLURM_VERSION}
+ARG SLURM_CONFDIR=${SLURM_ROOT}/etc
 
 ENV SLURM_VERSION   ${SLURM_VERSION}
 ENV SLURM_ROOT      ${SLURM_ROOT}
+ENV SLURM_CONFDIR   ${SLURM_CONFDIR}
 
 
 RUN zypper install -y       \
@@ -54,11 +56,11 @@ RUN mkdir -p /var/spool/slurmd    && chown slurm /var/spool/slurmd    && chmod u
 
 COPY install_slurm.sh .
 
-RUN  ./install_slurm.sh ${SLURM_VERSION} ${SLURM_ROOT} --enable-multiple-slurmd
+RUN  ./install_slurm.sh ${SLURM_VERSION} ${SLURM_ROOT} ${SLURM_CONFDIR} --enable-multiple-slurmd
 
-RUN  mkdir -p       ${SLURM_ROOT}/etc
-COPY cgroup.conf    ${SLURM_ROOT}/etc
-COPY slurm.conf.in  ${SLURM_ROOT}/etc
+RUN  mkdir -p       ${SLURM_CONFDIR}
+COPY cgroup.conf    ${SLURM_CONFDIR}
+COPY slurm.conf.in  ${SLURM_CONFDIR}
 
 COPY entrypoint.sh .
 ENTRYPOINT ["./entrypoint.sh"]
