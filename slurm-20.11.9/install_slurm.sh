@@ -13,7 +13,7 @@ slurm_tar_file=slurm-${SLURM_VERSION}.tar.bz2
 slurm_url=https://download.schedmd.com/slurm/${slurm_tar_file}
 
 
-if [ -z "$SLURM_VERSION" -o -z "$SLURM_ROOT" -o -z "$SLURM_CONFDIR"];
+if [ -z "$SLURM_VERSION" -o -z "$SLURM_ROOT" -o -z "$SLURM_CONFDIR" ];
 then
     echo "Usage: install_slurm.sh <slurm-version> <install-prefix> <sysconf-dir> [configure-args]"
     echo "No Slurm version or install-prefix specified on command line. Aborting."
