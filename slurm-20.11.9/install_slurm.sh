@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 #
 # Usage: install_slurm.sh <slurm-version> <install-prefix> [configure-args]
 #
@@ -54,6 +54,7 @@ stat /opt/build/slurm-${SLURM_VERSION} && rm -rf /opt/build/slurm-${SLURM_VERSIO
 mkdir -p /opt/build/slurm-${SLURM_VERSION} || exit 1
 (
     cd /opt/build/slurm-${SLURM_VERSION}
+    /opt/src/slurm-${SLURM_VERSION}/configure --help
     /opt/src/slurm-${SLURM_VERSION}/configure \
         --prefix=${SLURM_ROOT} \
         --sysconfdir=${SLURM_CONFDIR} \
