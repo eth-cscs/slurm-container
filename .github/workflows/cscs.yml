@@ -18,7 +18,7 @@ jobs:
     env:
       tag:          ghcr.io/eth-cscs/slurm-container-${{ matrix.version }}:latest
       context:      slurm-${{ matrix.version }}
-      extra_flags:  --build-arg SLURM_ROOT=/usr
+      extra_flags:  --build-arg SLURM_ROOT=/usr SLURM_CONFDIR=/etc
 
     steps:
     - uses: actions/checkout@v3
