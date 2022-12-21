@@ -6,7 +6,7 @@
 SLURM_VERSION=$1
 SLURM_ROOT=$2
 SLURM_CONFDIR=$3
-shift; shift
+shift; shift; shift
 ARGS=$*
 
 slurm_tar_file=slurm-${SLURM_VERSION}.tar.bz2
