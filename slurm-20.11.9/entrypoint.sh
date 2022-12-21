@@ -5,7 +5,8 @@ sudo -u munge munged
 
 . /usr/lib64/mpi/gcc/mpich/bin/mpivars.sh
 
-SLURM_CONF_IN=$SLURM_CONF/slurm.conf.in
+: "${SLURM_CONF_IN=$SLURM_CONFDIR/slurm.conf.in}"
+: "${SLURM_CONF=$SLURM_CONFDIR/slurm.conf}"
 
 # Default number of slurm nodes
 : "${SLURM_NUMNODES=3}"
@@ -40,8 +41,8 @@ echo "INFO: "
 echo "INFO: Derived values:"
 echo "INFO:"
 column -t <<-EOF
-      INFO: NODE_NAMES=$NODE_NAMES"
-      INFO: NODE_PORTS=$NODE_PORTS"
+      INFO: NODE_NAMES=$NODE_NAMES
+      INFO: NODE_PORTS=$NODE_PORTS
 EOF
 echo "INFO:"
 echo "INFO: Override any of the non-derived values by setting the respective environment variable"
