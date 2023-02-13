@@ -2,7 +2,7 @@ name: Build all slurm containers
 
 on:
   workflow_dispatch:
-    
+
 jobs:
 
   build:
@@ -13,6 +13,7 @@ jobs:
         version:
           - 20.11.9
           - 21.08.8-2
+          - 22.05.2
           - 22.05.5
 
     env:
