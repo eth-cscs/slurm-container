@@ -2,6 +2,11 @@ import pandas as pd
 import time
 import os
 
+def minutes_to_hh_mm_ss(minutes):
+    hours = minutes // 60
+    remaining_minutes = minutes % 60
+    return f"{hours:02d}:{remaining_minutes:02d}:00"
+
 # Read the file into a DataFrame
 df = pd.read_csv('slurm_anon_epyc64_10days', sep='|')
 
@@ -12,28 +17,17 @@ df['End'] = pd.to_datetime(df['End'], errors='coerce')
 
 # Calculate additional columns
 df['Duration'] = (df['End'] - df['Start']).dt.total_seconds()
-df['RequestedWalltime'] = df['TimelimitRaw'] * 60
 
 # Get the reference time (first submit time)
 reference_time = df['Submit'].iloc[0]
-
-# Initialize the TimeDiff column
-df['TimeDiff'] = 0.0
-
-# Calculate time difference for each row
-for i in range(len(df)):
-    if i == 0:
-        # First row: Time difference from the reference time
-        df.loc[i, 'TimeDiff'] = (df['Submit'].iloc[i] - reference_time).total_seconds()
-    else:
-        # For all other rows: Time difference from the previous row's Submit time
-        df.loc[i, 'TimeDiff'] = (df['Submit'].iloc[i] - df['Submit'].iloc[i-1]).total_seconds()
+df['TimeDiff'] = (df['Submit'] - reference_time).dt.total_seconds()
 
 # Template for the SLURM job script
 job_template = """#!/bin/bash
 #SBATCH --time={walltime}
 #SBATCH -N {nodes}
 #SBATCH -n {cpus}
+#SBATCH --mem={memory}
 #SBATCH --account={account}
 
 # Path to the log file where job information will be saved
@@ -55,13 +49,25 @@ sleep {duration}
 }} >> $LOG_FILE
 """
 
+# Create log directory if it doesn't exist
+os.makedirs('./log', exist_ok=True)
+
 # Iterate over each row in the DataFrame
 for index, row in df.iterrows():
     user_id = row['User']
     account_id = row['Account']
-    walltime = time.strftime('%H:%M:%S', time.gmtime(row['RequestedWalltime']))
+    # Convert TimelimitRaw (minutes) to HH:MM:SS format
+    walltime = minutes_to_hh_mm_ss(int(row['TimelimitRaw']))
     nodes = row['ReqNodes']
     cpus = row['ReqCPUS']
+    # Extract memory from ReqTRES
+    memory = next((param.split('=')[1] for param in row['ReqTRES'].split(',') 
+                  if 'mem=' in param), '1G')  # Default to 1G if not found
+
+    if index==1: print('dividing the memory req by 1/2')
+    memory_value = int(memory.rstrip('G'))  # Remove 'G' and convert to int
+    memory = f"{memory_value // 2}G"  # Divide by 2 and add 'G' back
+
     duration = row['Duration']
     time_diff = row['TimeDiff']
 
@@ -70,6 +76,7 @@ for index, row in df.iterrows():
         walltime=walltime,
         nodes=nodes,
         cpus=cpus,
+        memory=memory,
         account=account_id,
         duration=duration
     )
@@ -80,7 +87,6 @@ for index, row in df.iterrows():
         job_script_file.write(job_script_content)
 
     # Wait for the specified time difference
-    print(f"waiting for {time_diff} seconds before submitting the next job")
     time.sleep(time_diff)
 
     # Submit the job using sbatch

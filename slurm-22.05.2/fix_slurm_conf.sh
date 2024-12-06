@@ -12,6 +12,9 @@ sed -i '/ClusterName=cluster/i AuthType=auth/none' "$CONFIG_FILE"
 # Find 'TaskPlugin=task/affinity' and replace it with 'TaskPlugin=task/none'
 sed -i 's/TaskPlugin=task\/affinity/TaskPlugin=task\/none/' "$CONFIG_FILE"
 
+# Modify the last NodeName line to include RealMemory=131000
+sed -i 's/NodeName=nd\[00001-00171\] \(.*\)State=UNKNOWN CPUs=64/NodeName=nd[00001-00171] RealMemory=131000 \1State=UNKNOWN CPUs=64/' "$CONFIG_FILE"
+
 # Confirm changes
 echo "Changes made successfully. Backup of original file saved as slurm.conf.bak."
 
