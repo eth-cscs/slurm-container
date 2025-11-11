@@ -17,6 +17,7 @@ jobs:
           - 23.02.1
           - 23.02.6
           - 23.02.7
+          - 25.05.4
 
     env:
       tag:          ghcr.io/eth-cscs/slurm-container-${{ matrix.version }}:latest
