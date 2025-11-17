@@ -1,4 +1,4 @@
-FROM opensuse/leap:15.4
+FROM opensuse/leap:15.5
 
 ARG SLURM_VERSION=25.05.4
 ARG SLURM_ROOT=/opt/slurm-${SLURM_VERSION}
