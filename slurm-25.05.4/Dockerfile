@@ -58,6 +58,9 @@ RUN  mkdir -p       ${SLURM_CONFDIR}
 COPY cgroup.conf    ${SLURM_CONFDIR}
 COPY slurm.conf.in  ${SLURM_CONFDIR}
 
+RUN mkdir -p /run/munge \
+ && chown munge /run/munge
+
 COPY entrypoint.sh .
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["bash"]
